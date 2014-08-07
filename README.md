@@ -17,8 +17,19 @@ The extension will add a new tab to Burp's UI to allow the user to configure it,
 
 An additional file "BoringHeaders.txt" is included apart from the extension. This file includes a predefined list of boring headers that might prove useful for the user. 
 
+Screenshots
+-----------
+Extension tab:
+
+![Alt text](/Screenshots/1.jpg?raw=true "Extension Tab")
+
+Flagged issues:
+
+![Alt text](/Screenshots/2.jpg?raw=true "Flagged Issues")
+
+
 Version
-----
+-------
 
 1.0
 
