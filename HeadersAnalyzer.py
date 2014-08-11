@@ -30,6 +30,7 @@ from burp import IBurpExtender
 from burp import IScannerCheck
 from burp import IScanIssue
 from burp import ITab
+from burp import IExtensionStateListener
 from javax import swing
 from java.awt import Font
 from java.awt.datatransfer import StringSelection
@@ -37,27 +38,74 @@ from java.awt.datatransfer import DataFlavor
 from java.awt import Toolkit
 import java.lang as lang
 import re
+import pickle
 
-class BurpExtender(IBurpExtender, IScannerCheck, ITab):
+class BurpExtender(IBurpExtender, IScannerCheck, ITab, IExtensionStateListener):
 
     def	registerExtenderCallbacks(self, callbacks):
         
-        print "Loading...\n"
+        print "Loading..."
 
         self._callbacks = callbacks
         self._callbacks.setExtensionName("Headers Analyzer")
         self._callbacks.registerScannerCheck(self)
+        self._callbacks.registerExtensionStateListener(self)
         
         self.initGui()
+        self.extensionLoaded()
         self._callbacks.addSuiteTab(self)
 
         # Variable to keep a browsable structure of the issues find on each host
         # later used in the export function.
         self.global_issues = {} 
 
-        print "Loaded!\n"
+        print "Loaded!"
 
         return
+
+    def saveExtensionSetting(self, name, value):
+        try:
+            self._callbacks.saveExtensionSetting(name, value)
+        except Exception:
+            print ('Error saving extension settings')
+
+    # Save current settings when the extension is unloaded or Burp is closed
+    def extensionUnloaded(self):
+        config = {
+            'interestingHeadersCB' : self.interestingHeadersCB.isSelected(),
+            'securityHeadersCB' : self.securityHeadersCB.isSelected(),
+            'xFrameOptionsCB' : self.xFrameOptionsCB.isSelected(),
+            'xContentTypeOptionsCB' : self.xContentTypeOptionsCB.isSelected(),
+            'xXssProtectionCB' : self.xXssProtectionCB.isSelected(),
+            'HstsCB' : self.HstsCB.isSelected(),
+            'CorsCB' : self.CorsCB.isSelected(),
+            'contentSecurityPolicyCB' : self.contentSecurityPolicyCB.isSelected(),
+            'xPermittedCrossDomainPoliciesCB' : self.xPermittedCrossDomainPoliciesCB.isSelected(),
+            'boringHeadersList' : self.getBoringHeadersList() 
+        }
+        
+        for key, value in config.iteritems():   # For each config value
+            self.saveExtensionSetting(key, pickle.dumps(value))
+
+        return
+
+    # Restore last configuration
+    def extensionLoaded(self):
+        try:
+            self.interestingHeadersCB.setSelected(pickle.loads(self._callbacks.loadExtensionSetting('interestingHeadersCB')))
+            self.securityHeadersCB.setSelected(pickle.loads(self._callbacks.loadExtensionSetting('securityHeadersCB')))
+            self.xFrameOptionsCB.setSelected(pickle.loads(self._callbacks.loadExtensionSetting('xFrameOptionsCB')))
+            self.xContentTypeOptionsCB.setSelected(pickle.loads(self._callbacks.loadExtensionSetting('xContentTypeOptionsCB')))
+            self.xXssProtectionCB.setSelected(pickle.loads(self._callbacks.loadExtensionSetting('xXssProtectionCB')))
+            self.HstsCB.setSelected(pickle.loads(self._callbacks.loadExtensionSetting('HstsCB')))
+            self.CorsCB.setSelected(pickle.loads(self._callbacks.loadExtensionSetting('CorsCB')))
+            self.contentSecurityPolicyCB.setSelected(pickle.loads(self._callbacks.loadExtensionSetting('contentSecurityPolicyCB')))
+            self.xPermittedCrossDomainPoliciesCB.setSelected(pickle.loads(self._callbacks.loadExtensionSetting('xPermittedCrossDomainPoliciesCB')))
+            self.boringHeadersList.setListData(pickle.loads(self._callbacks.loadExtensionSetting('boringHeadersList')))
+
+            print "Extension settings restored!"
+        except Exception as e:
+            print "Error restoring extension settings (first time loading the extension?)"
 
     def initGui(self):
 
@@ -259,12 +307,8 @@ class BurpExtender(IBurpExtender, IScannerCheck, ITab):
         clipboard = self.getClipboardText()
         
         if clipboard != None and clipboard != "":
-            model = self.boringHeadersList.getModel()
             lines = clipboard.split('\n')
-            current = []
-
-            for i in range(0, model.getSize()):
-                current.append(model.getElementAt(i))
+            current = self.getBoringHeadersList()
             
             for line in lines:
                 if line not in current and not line.isspace():
@@ -278,11 +322,7 @@ class BurpExtender(IBurpExtender, IScannerCheck, ITab):
 
     def remove(self, e):
         indices = self.boringHeadersList.getSelectedIndices().tolist()
-        model = self.boringHeadersList.getModel()
-        current = []
-   
-        for i in range(0, model.getSize()):
-            current.append(model.getElementAt(i))
+        current = self.getBoringHeadersList()
 
         for index in reversed(indices):   
             del current[index]
@@ -309,16 +349,22 @@ class BurpExtender(IBurpExtender, IScannerCheck, ITab):
 
     def add(self, e):
         source = e.getSource()
+
+        current = self.getBoringHeadersList()
+        current.append(self.addTF.getText())
+        self.boringHeadersList.setListData(current)
+
+        self.addTF.setText("New item...")
+
+    def getBoringHeadersList(self):
         model = self.boringHeadersList.getModel()
         current = []
    
         for i in range(0, model.getSize()):
             current.append(model.getElementAt(i))
 
-        current.append(self.addTF.getText())
-        self.boringHeadersList.setListData(current)
+        return current
 
-        self.addTF.setText("New item...")
 
     # Browses the "global_issues" var. 
     def export(self, e):
