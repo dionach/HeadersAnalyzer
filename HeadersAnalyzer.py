@@ -392,14 +392,14 @@ class BurpExtender(IBurpExtender, IScannerCheck, ITab):
                 headers_dict[header_split[0].lower()] = header_split[1]
 
         if self.interestingHeadersCB.isSelected():
-            self.findInteresting(headers_dict)
+            self.findInteresting(host, headers_dict)
         
         if self.securityHeadersCB.isSelected():
-            self.findSecure(headers_dict)
+            self.findSecure(host, headers_dict)
         
         return (self.scan_issues)
         
-    def findInteresting(self, headers):
+    def findInteresting(self, host, headers):
         list_boring_headers = []
         model = self.boringHeadersList.getModel()
    
@@ -410,7 +410,7 @@ class BurpExtender(IBurpExtender, IScannerCheck, ITab):
         issuename = "Interesting Header(s)"
         issuelevel = "Low"
         issuedetail = "<p>The response includes the following potentially interesting headers:</p><ul>"
-        log = "[+] Interesting Headers found:\n"
+        log = "[+] Interesting Headers found: " + host + "\n"
         found = 0
 
         for header in headers:
@@ -436,7 +436,7 @@ class BurpExtender(IBurpExtender, IScannerCheck, ITab):
 
             self.logsTA.append(log)
           
-    def findSecure(self, headers):
+    def findSecure(self, host, headers):
         issuename = "Lack or Misconfiguration of Security Header(s)"
         issuelevel = "Low"
         issuedetail = """<p>The response lacks or includes the following misconfigured security headers.</p>
@@ -508,7 +508,7 @@ class BurpExtender(IBurpExtender, IScannerCheck, ITab):
         if len(badheaders) > 0 or len(missingsecurity) > 0:     
             if len(badheaders) > 0:
                 issuedetail += "<p>Potentially misconfigured headers:</p><ul>"
-                log = "[+] Potentially miconfigured headers found:\n"
+                log = "[+] Potentially miconfigured headers found: " + host + "\n"
                 
                 for bad in badheaders:
                     issuedetail += "<li>Header name: <b>" + bad + "</b>. Header value: <b>" + headers[bad] + "</b></li>"
@@ -526,7 +526,7 @@ class BurpExtender(IBurpExtender, IScannerCheck, ITab):
                     
             if len(missingsecurity) > 0:
                 issuedetail += "<p>Missing headers:</p><ul>"
-                log = "[+] Missing headers found:\n"
+                log = "[+] Missing security headers: " + host + "\n"
                 
                 for missing in missingsecurity:
                     issuedetail += "<li>Header name: <b>" + missing + "</b>.</li>"
