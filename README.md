@@ -37,7 +37,12 @@ Version
 Installation
 --------------
 
-Jython is needed for this extension to work properly, so remember to set it up in Burp before adding the extension.
+Jython 2.7+ is needed for this extension to work properly, so remember to set it up in Burp before adding the extension.
 After that, just add a new extension in the "Extensions" tab, choose "Python" as the extension type, and point to the "HeadersAnalyzer.py" file.
+
+The first time you load the extension, the "Boring Headers" list will be empty, a file with default boring headers can be found at:
+https://github.com/Dionach/HeadersAnalyzer/blob/master/BoringHeaders.txt. 
+
+The extension will save the current settings before Burp is closed, and restore them once the extension is loaded again.
 
 Check the "Output" and "Errors" tabs for possible feedback.
