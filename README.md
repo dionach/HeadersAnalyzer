@@ -5,7 +5,7 @@ Headers Analyzer is a Burp extension written in Python that making use of the "P
 
   - Headers that might disclose some interesting information. 
   - Missing security headers.
-  - Misconfigured security headers
+  - Misconfigured security headers.
 
 Issues found will be reported and added to the passive scanner tab in a similar way to the native issues reported by Burp.
 
@@ -15,7 +15,7 @@ The extension will add a new tab to Burp's UI to allow the user to configure it,
   - Boring headers, a list of boring headers that the extension will omit.
   - Export the results in a "report friendly" format.
 
-An additional file "BoringHeaders.txt" is included apart from the extension. This file includes a predefined list of boring headers that might prove useful for the user. 
+An additional "BoringHeaders.txt" file is included apart from the extension. This file includes a predefined list of boring headers that might prove useful for the user. 
 
 Screenshots
 -----------
