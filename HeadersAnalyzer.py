@@ -105,19 +105,19 @@ class BurpExtender(IBurpExtender, IScannerCheck, ITab, IExtensionStateListener):
 
             print "Extension settings restored!"
         except:
-			self.interestingHeadersCB.setSelected(True)
-			self.securityHeadersCB.setSelected(True)
-			self.xFrameOptionsCB.setSelected(True)
-			self.xContentTypeOptionsCB.setSelected(True)
-			self.xXssProtectionCB.setSelected(True)
-			self.HstsCB.setSelected(True)
-			self.CorsCB.setSelected(True)
-			self.contentSecurityPolicyCB.setSelected(True)
-			self.xPermittedCrossDomainPoliciesCB.setSelected(True)
-			empty = []
-			self.boringHeadersList.setListData(empty)
-			
-			print "Error restoring extension settings (first time loading the extension?)"
+            self.interestingHeadersCB.setSelected(True)
+            self.securityHeadersCB.setSelected(True)
+            self.xFrameOptionsCB.setSelected(True)
+            self.xContentTypeOptionsCB.setSelected(True)
+            self.xXssProtectionCB.setSelected(True)
+            self.HstsCB.setSelected(True)
+            self.CorsCB.setSelected(True)
+            self.contentSecurityPolicyCB.setSelected(True)
+            self.xPermittedCrossDomainPoliciesCB.setSelected(True)
+            empty = []
+            self.boringHeadersList.setListData(empty)
+
+            print "Error restoring extension settings (first time loading the extension?)"
 
     def initGui(self):
 
