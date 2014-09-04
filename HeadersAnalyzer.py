@@ -52,8 +52,8 @@ class BurpExtender(IBurpExtender, IScannerCheck, ITab, IExtensionStateListener):
         self._callbacks.registerExtensionStateListener(self)
         
         self.initGui()
-        self.extensionLoaded()
         self._callbacks.addSuiteTab(self)
+        self.extensionLoaded()
 
         # Variable to keep a browsable structure of the issues find on each host
         # later used in the export function.
@@ -104,8 +104,20 @@ class BurpExtender(IBurpExtender, IScannerCheck, ITab, IExtensionStateListener):
             self.boringHeadersList.setListData(pickle.loads(self._callbacks.loadExtensionSetting('boringHeadersList')))
 
             print "Extension settings restored!"
-        except Exception as e:
-            print "Error restoring extension settings (first time loading the extension?)"
+        except:
+			self.interestingHeadersCB.setSelected(True)
+			self.securityHeadersCB.setSelected(True)
+			self.xFrameOptionsCB.setSelected(True)
+			self.xContentTypeOptionsCB.setSelected(True)
+			self.xXssProtectionCB.setSelected(True)
+			self.HstsCB.setSelected(True)
+			self.CorsCB.setSelected(True)
+			self.contentSecurityPolicyCB.setSelected(True)
+			self.xPermittedCrossDomainPoliciesCB.setSelected(True)
+			empty = []
+			self.boringHeadersList.setListData(empty)
+			
+			print "Error restoring extension settings (first time loading the extension?)"
 
     def initGui(self):
 
@@ -139,15 +151,6 @@ class BurpExtender(IBurpExtender, IScannerCheck, ITab, IExtensionStateListener):
         self.exportButton = swing.JButton("Export in report friendly format", actionPerformed=self.export)
 
         self.jScrollPane1.setViewportView(self.boringHeadersList)
-        self.interestingHeadersCB.setSelected(True)
-        self.securityHeadersCB.setSelected(True)
-        self.xFrameOptionsCB.setSelected(True)
-        self.xContentTypeOptionsCB.setSelected(True)
-        self.xXssProtectionCB.setSelected(True)
-        self.HstsCB.setSelected(True)
-        self.CorsCB.setSelected(True)
-        self.contentSecurityPolicyCB.setSelected(True)
-        self.xPermittedCrossDomainPoliciesCB.setSelected(True)
         self.logsTA.setColumns(20)
         self.logsTA.setRows(7)
         self.jScrollPane2.setViewportView(self.logsTA)
