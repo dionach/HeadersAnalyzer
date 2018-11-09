@@ -516,11 +516,11 @@ class BurpExtender(IBurpExtender, IScannerCheck, ITab, IExtensionStateListener):
         if self.xXssProtectionCB.isSelected():
             # X-XSS-Protection
             try:
-                m = re.search("0", headers["x-xss-protection"], re.IGNORECASE)
+                m = re.search("^1*", headers["x-xss-protection"], re.IGNORECASE)
                 if not m:
                     badheaders.append("x-xss-protection")
             except Exception as e:
-                pass
+                missingsecurity.append("x-xss-protection")
 
         if self.HstsCB.isSelected():
             # Strict-Transport-Security (HSTS)
@@ -536,7 +536,7 @@ class BurpExtender(IBurpExtender, IScannerCheck, ITab, IExtensionStateListener):
             try:
                 m = re.search("\*", headers["access-control-allow-origin"], re.IGNORECASE)
                 if not m:
-                    badheaders.append("x-xss-protection")
+                    badheaders.append("access-control-allow-origin")
             except Exception as e:
                 pass
 
