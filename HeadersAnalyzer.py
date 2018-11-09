@@ -536,7 +536,7 @@ class BurpExtender(IBurpExtender, IScannerCheck, ITab, IExtensionStateListener):
             try:
                 m = re.search("\*", headers["access-control-allow-origin"], re.IGNORECASE)
                 if not m:
-                    badheaders.append("x-xss-protection")
+                    badheaders.append("access-control-allow-origin")
             except Exception as e:
                 pass
 
