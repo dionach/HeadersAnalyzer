@@ -456,6 +456,12 @@ class BurpExtender(IBurpExtender, IScannerCheck, ITab, IExtensionStateListener):
         for i in range(0, model.getSize()):
             list_boring_headers.append(model.getElementAt(i))
         
+        if self.xPermittedCrossDomainPoliciesCB.isSelected():
+            list_boring_headers.append('x-permitted-cross-domain-policies')
+
+        if self.contentSecurityPolicyCB.isSelected():
+            list_boring_headers.append('content-security-policy')
+
         issuename = "Interesting Header(s)"
         issuelevel = "Low"
         issuedetail = "<p>The response includes the following potentially interesting headers:</p><ul>"
